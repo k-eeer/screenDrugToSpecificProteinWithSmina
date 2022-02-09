@@ -1,4 +1,4 @@
-# fdaProvedDrugDockingWithSmina-description and usage:
+# screenDrugToSpecificProteinWithSmina-description and usage:
 This script is a demo to screening possible drug as the inhibitor to the specific protein with the software, Smina.
 
         $sh ./workflow.sh
