@@ -14,7 +14,7 @@ And you can revise loop condition to run complete process. It might take 3-4 or 
 
 
         $sh ./buildSql.sh
-        firefox -new-tab "https://pubchem.ncbi.nlm.nih.gov/compound/$page"
+        $firefox -new-tab "https://pubchem.ncbi.nlm.nih.gov/compound/$page"
 
 
 
