@@ -10,9 +10,7 @@ And you can revise loop condition to run complete process. It might take 3-4 or 
 
 
 
-**[optional]**  You can use buildSql.sh to build a MySQL table of PubChem pages of  possible drug information.(pubchempy should be installd by "
-
-    $sudo pip install pubchempy")
+**[optional]**  You can use buildSql.sh to build a MySQL table of PubChem pages of  possible drug information.(pubchempy should be installd by "$sudo pip install pubchempy")
 
 
         $sh ./buildSql.sh
