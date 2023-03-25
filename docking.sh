@@ -1,16 +1,3 @@
-#!/bin/bash 
-#author:k-eeer
-#######################################################################################
-#description:                                                                          
-#This scripts prepares protein and drug molecules(="ligands" in this scripts)' structures,
-#Then fitting one pretein and one drug molecules,caculating the affinity to get some drug molecules
-#in some states which fit protein molecule best. Those drug molecules can be material to design new
-#drug or therapy.                                                                      
-#Whole process can be divided into four parts: 1)prepare molecules,2)docking(=fitting),#3)rescoring
-#to get more reliable result, and 4)view the result.                                   
-#######################################################################################
-#Prerequisites:
-
 #1)tools:
 #R-package 'Bio3d'
 #Gromacs
