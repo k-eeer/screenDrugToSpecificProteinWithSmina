@@ -1,7 +1,7 @@
 # screenDrugToSpecificProteinWithSmina-description and usage:
 This script is a demo to screening possible drug as the inhibitor to the specific protein with the software, Smina.
 
-        $sh ./workflow.sh
+        $sh ./docking.sh
 
 
 The R-package ,Bio3d and the rescoring function of Smina are used to improve screening accruacy. 
@@ -58,7 +58,6 @@ simulated possible condition which drug molecule(stick structure) fills in the p
 # optioinal output:
 
 ![buildSql](output/buildSql.png)
-
 
 
 
