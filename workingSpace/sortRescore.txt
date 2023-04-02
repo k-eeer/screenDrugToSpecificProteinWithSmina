@@ -1,0 +1,9 @@
+resprotein2protein2drug36.pdbqt -5.95935345
+resprotein3protein3drug1234.pdbqt -3.62019205
+resprotein1protein1drug676.pdbqt -2.87699223
+resprotein1protein2drug36.pdbqt 0.704417586
+resprotein2protein1drug676.pdbqt 6.39959621
+resprotein3protein1drug676.pdbqt 11.4886675
+resprotein1protein3drug1234.pdbqt 17.9868259
+resprotein3protein2drug36.pdbqt 25.5707836
+resprotein2protein3drug1234.pdbqt 70.5747452

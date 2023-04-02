@@ -23,9 +23,9 @@ echo $'0\n0\n'|gmx cluster -f correctNma.pdb  -s frame1.pdb  -method gromos -cl 
 	done
 fi
 
-mkdir -p fda
-cp protein*pdbqt fda.mol2 ./fda
-cd fda
+mkdir -p workingSpace
+cp protein*pdbqt fda.mol2 ./workingSpace
+cd workingSpace
 
 #setting docking coordinate;file bindingsite.r
 Rscript ../bindingSite.r>binding.log

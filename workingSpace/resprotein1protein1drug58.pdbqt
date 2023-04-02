@@ -1,0 +1,23 @@
+MODEL 1
+REMARK minimizedAffinity -3.22538185
+REMARK minimizedRMSD -1
+REMARK minimizedAffinity -5.02330875
+REMARK minimizedRMSD -1
+REMARK  0 active torsions:
+REMARK  status: ('A' for Active; 'I' for Inactive)
+ROOT
+ATOM      1  S1  ZIN A   1      30.587  46.790  31.837  1.00  0.00    -0.058 SA
+ATOM      2  C2  ZIN A   1      30.233  46.389  30.211  1.00  0.00     0.132 A 
+ATOM      3  N3  ZIN A   1      30.005  45.107  29.848  1.00  0.00    -0.340 N 
+ATOM      4  C4  ZIN A   1      29.726  44.797  28.556  1.00  0.00     0.210 A 
+ATOM      5  N5  ZIN A   1      29.665  45.703  27.623  1.00  0.00    -0.222 NA
+ATOM      6  C6  ZIN A   1      29.881  47.010  27.905  1.00  0.00     0.181 A 
+ATOM      7  C7  ZIN A   1      30.166  47.385  29.220  1.00  0.00     0.120 A 
+ATOM      8  N8  ZIN A   1      30.335  48.752  29.204  1.00  0.00    -0.345 N 
+ATOM      9  C9  ZIN A   1      30.155  49.160  27.930  1.00  0.00     0.210 A 
+ATOM     10  N10 ZIN A   1      29.883  48.134  27.169  1.00  0.00    -0.222 NA
+ATOM     11  H11 ZIN A   1      30.043  44.403  30.515  1.00  0.00     0.167 HD
+ATOM     12  H13 ZIN A   1      30.543  49.315  29.965  1.00  0.00     0.167 HD
+ENDROOT
+TORSDOF 0
+ENDMDL

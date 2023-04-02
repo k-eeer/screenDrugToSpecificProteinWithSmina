@@ -1,0 +1,3 @@
+outprotein2drug36.pdbqt -7.44333839
+outprotein3drug1234.pdbqt -5.13288784
+outprotein1drug676.pdbqt -4.89595795

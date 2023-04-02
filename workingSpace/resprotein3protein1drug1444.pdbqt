@@ -1,0 +1,39 @@
+MODEL 1
+REMARK minimizedAffinity -4.4863925
+REMARK minimizedRMSD -1
+REMARK minimizedAffinity -5.93848896
+REMARK minimizedRMSD -1
+REMARK  4 active torsions:
+REMARK  status: ('A' for Active; 'I' for Inactive)
+REMARK    1  A    between atoms: C8_8  and  O9_9 
+REMARK    2  A    between atoms: O9_9  and  C10_10 
+REMARK    3  A    between atoms: C10_10  and  C11_11 
+REMARK    4  A    between atoms: C11_11  and  N14_13 
+ROOT
+ATOM      1  C1  ZIN A   1      31.821  48.892  30.302  1.00  0.00     0.051 C 
+ATOM      2  C2  ZIN A   1      31.164  48.934  28.947  1.00  0.00    -0.028 A 
+ATOM      3  C3  ZIN A   1      31.662  49.768  27.963  1.00  0.00     0.009 A 
+ATOM      4  C4  ZIN A   1      31.060  49.807  26.719  1.00  0.00     0.001 A 
+ATOM      5  C5  ZIN A   1      29.960  49.011  26.455  1.00  0.00     0.009 A 
+ATOM      6  C6  ZIN A   1      29.459  48.177  27.435  1.00  0.00    -0.028 A 
+ATOM      7  C7  ZIN A   1      28.260  47.310  27.147  1.00  0.00     0.051 C 
+ATOM      8  C8  ZIN A   1      30.064  48.132  28.682  1.00  0.00     0.080 A 
+ENDROOT
+BRANCH   8   9
+ATOM      9  O9  ZIN A   1      29.573  47.311  29.648  1.00  0.00    -0.348 OA
+BRANCH   9  10
+ATOM     10  C10 ZIN A   1      30.196  46.032  29.791  1.00  0.00     0.208 C 
+BRANCH  10  11
+ATOM     11  C11 ZIN A   1      30.231  45.645  31.271  1.00  0.00     0.203 C 
+ATOM     12  C13 ZIN A   1      29.290  46.558  32.059  1.00  0.00     0.042 C 
+BRANCH  11  13
+ATOM     13  N14 ZIN A   1      29.799  44.249  31.422  1.00  0.00    -0.073 N 
+ATOM     14  H15 ZIN A   1      29.822  43.993  32.398  1.00  0.00     0.274 HD
+ATOM     15  H16 ZIN A   1      28.859  44.148  31.070  1.00  0.00     0.274 HD
+ATOM     16  H17 ZIN A   1      30.420  43.647  30.903  1.00  0.00     0.274 HD
+ENDBRANCH  11  13
+ENDBRANCH  10  11
+ENDBRANCH   9  10
+ENDBRANCH   8   9
+TORSDOF 4
+ENDMDL
