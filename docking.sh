@@ -1,180 +1,124 @@
-#1)tools:
-#R-package 'Bio3d'
-#Gromacs
-#Pymol
-#MGLTools
-#Open Babel
-#Smina
+#1-a)準備蛋白質分子:
+file="protein*pdbqt"
+if [[ ! -f "protein$file" ]]; then
+	echo "1-a)準備蛋白質分子： (PDB ID:3CM5)"
+	Rscript normalModeAnalysis.r>normalModeAnalysis.log 2>&1
+	bash correctMode.sh
 
-#2)files:
-#nma.r
-#correctMode.sh
-#forAlignPml.sh
-#bindingSite.r
-#fda.mol2
+	#get c-alpha 3CM5 for the following cluster
+	#frame1 of correctNma.pdb as reference.
+	grep -A 589  "MODEL        1" correctNma.pdb>frame1.pdb
+	#cluster threshold 0.26nm to get 3 receptor;use Gromacs"
+echo $'0\n0\n'|gmx cluster -f correctNma.pdb  -s frame1.pdb  -method gromos -cl clNma.pdb  -cutoff 0.26 -pbc
 
-#_____________________________________________________________________
-#1)prepare molecules
-
-file="tf*pdbqt"
-if [[ ! -f "$file" ]]; then
-    
-echo "1)prepare molecules:protein (PDB ID:3CM5)"
-
-#file:nma.r;sofrware:R package 'Bio3d'
-Rscript nma.r>nma.log 2>&1
-
-#correct the residue name (all is ALA now).;file:correctMode.sh
-sh correctMode.sh
-
-#get c-alpha 3CM5 for the following cluster
-#(frame1 of correctnma.pdb as reference.)
-grep -A 589  "MODEL        1" correctNma.pdb>frame1.pdb
-#cluster threshold 0.26nm to get 3 receptor;use Gromacs"
-gmx cluster -f correctNma.pdb  -s frame1.pdb  -method gromos -cl clNma.pdb  -cutoff 0.26 -pbc<<EOF
-0
-0
-EOF
-
-#split PDBs to single PDB.
-csplit clNma.pdb /TITLE/ -n1 {*} -f clNmas -b %1d.pdb
-rm -r clNmas0.pdb
-
-#superposition.;file:forAlignPml.sh;tool:Pymol
-sh forAlignPml.sh
-pymol -c segmentAlign.pml 1>/dev/null
-#gnome-terminal -e "bash -c \"pymol AlignAnimation.pml; exec bash\" "
-
-for i in 1 2 3
-do
-/mgltools_x86_64Linux2_1.5.6/bin/pythonsh /mgltools_x86_64Linux2_1.5.6/MGLToolsPckgs/AutoDockTools/Utilities24/prepare_receptor4.py -r tf$i.pdb  -o tf$i.pdbqt -A hydrogens
-done
-
-
+	#split PDBs to single PDB.
+	csplit clNma.pdb /TITLE/ -n1 {*} -f clNmas -b %1d.pdb
+	rm -r clNmas0.pdb
+	#superposition.;file:forAlignPml.sh;tool:Pymol
+	#bash forAlignPml.sh
+	#pymol -c segmentAlign.pml 1>/dev/null
+	for i in {1..3};do
+		mv cluster$i.pdb protein$i.pdb
+		prepare_receptor4.py -r protein$i.pdb  -o protein$i.pdbqt -A hydrogens
+	done
 fi
 
 mkdir -p fda
-cp tf*pdbqt fda.mol2 ./fda
+cp protein*pdbqt fda.mol2 ./fda
 cd fda
 
-
 #setting docking coordinate;file bindingsite.r
-
 Rscript ../bindingSite.r>binding.log
 resid=$(sed -n '/\[/ p' binding.log |awk '{print $3}')
 resname=$(grep  "\[" binding.log|cut -c 6-9)
-grep "CA.*${resname}.*A.*${resid}" tf2.pdbqt >coor.pdb
+grep "CA.*${resname}.*A.*${resid}" protein2.pdbqt >coor.pdb
 cx=$(awk '{print $7}' coor.pdb)
 cy=$(awk '{print $8}' coor.pdb)
 cz=$(awk '{print $9}' coor.pdb)
 
-echo "1)prepare molecules:fda approved drug molecules."
+#1-b)準備藥物分子：
+echo "1-b)準備藥物分子(fda approved drug molecules.)"
 #download from ZINC15.use firefox.http://zinc15.docking.org/substances/subsets/fda.mol2?count=all
 #check number of molecules of download mol2 file. 
-#file:fda.mol2;tool:open babel, mgltools
+countDrug=drug*pdbqt
+if [[ ! -f $countDrug ]]; then
 
-countLig=lig*pdbqt
-if [[ ! -f $countLig ]]; then
-
-echo -n "total molecules you download is "
-grep '^ZINC' fda.mol2|wc -l
-
-babel -imol2 fda.mol2 -opdb lig.pdb -m
+	echo -n "total molecules you download is "
+	grep '^ZINC' fda.mol2|wc -l
+	obabel -imol2 fda.mol2 -opdb -Odrug.pdb -m
 fi
 
-count=$(ls out*pdbqt|wc -l)
-if (($count<30)); then
-
-
-#get 10 random ligand for docking.
-randLig=$(ls lig*pdb |shuf -n 10)
-for l in $randLig
-do
-/mgltools_x86_64Linux2_1.5.6/bin/pythonsh /mgltools_x86_64Linux2_1.5.6/MGLToolsPckgs/AutoDockTools/Utilities24/prepare_ligand4.py -l ${l}  -o `basename ${l} .pdb`.pdbqt 1>/dev/null
-rm -f $l
-done
-
+count=$(ls drug*pdbqt|wc -l)
+if [[ $count<30 ]];then
+	#get 1 random ligand for docking.
+	randDrug=$(ls drug*pdb |shuf -n 1)
+	for l in $randDrug;do
+		prepare_ligand4.py -l ${l}  -o `basename ${l} .pdb`.pdbqt 1>/dev/null
+		rm -f $l
+	done
 #---------------------------------------------------------------------
-#2)docking
-
-echo "2)docking by smina"
-rm -f dockingAffinity.txt 
-rm -f out*
-
-for r in tf*.pdbqt
-do
-for l in lig*pdbqt
-do
-echo "docking ${r} - ${l}"
-smina --receptor $r --ligand $l --center_x $cx --center_y $cy --center_z $cz --size_x 20 --size_y 20 --size_z 20 --num_modes 1 --out out`basename ${r} .pdbqt`${l}  1>/dev/null
-echo -n out`basename ${r} .pdbqt`${l} "">> dockingAffinity.txt
-grep minimizedAffinity out`basename ${r} .pdbqt`${l}|awk '{print $3}'>> dockingAffinity.txt
-done
-done
+#2)蛋白質分子藥物分子對接
+	echo "2)蛋白質分子藥物分子對接"
+	rm -f dockingAffinity.txt 
+	rm -f out*
+	for r in protein*.pdbqt;do
+		#單純測試，因此每個蛋白分子都只試接1藥物分子
+		for l in $(shuf -e -n1 drug*pdbqt);do
+			echo "${r} - ${l}對接"
+			smina --receptor $r --ligand $l --center_x $cx --center_y $cy --center_z $cz --size_x 20 --size_y 20 --size_z 20 --num_modes 1 --out out`basename ${r} .pdbqt`${l}  1>/dev/null
+			echo -n out`basename ${r} .pdbqt`${l} "">> dockingAffinity.txt
+			grep minimizedAffinity out`basename ${r} .pdbqt`${l}|awk '{print $3}'>> dockingAffinity.txt
+		done
+	done
 
 #-----------------------------------------------------------------------
-#3)recoring to get more reliable result
+#3)重新評估結果
 
-echo "3)rescoring to get more reliable result"
-rm -f sortDocking.txt
-sort -o sortDocking.txt -gk2 dockingAffinity.txt
-rm -f rescoring.txt
-top=$(less sortDocking.txt|tail -n 3|awk '{print $1}')
-for r in tf*.pdbqt
-do
-for s in $top
-do
-r1=`basename ${r} .pdbqt`
-s1=$(echo ${s:3})
-s2=${r1}${s1}
-sed -i  '/MODEL/d' ${s}
-sed -i '/ENDMDL/d' ${s}
+	echo "3)重新評估以得更可靠結果："
+	rm -f sortDocking.txt
+	sort -o sortDocking.txt -gk2 dockingAffinity.txt
+	rm -f rescoring.txt
+	top=$(less sortDocking.txt|tail -n 3|awk '{print $1}')
+	for r in protein*.pdbqt;do
+		for s in $top;do
+			r1=`basename ${r} .pdbqt`
+			s1=$(echo ${s:3})
+			s2=${r1}${s1}
+			sed -i  '/MODEL/d' ${s}
+			sed -i '/ENDMDL/d' ${s}
+		
+			echo "rescoring $r ${s} "
+			smina --receptor $r --ligand ${s} --center_x $cx --center_y $cy --center_z $cz --size_x 20 --size_y 20 --size_z 20 --num_modes 1 --scoring vinardo --score_only --out res${s2}   1>/dev/null
 
-echo "rescoring $r ${s} "
-smina --receptor $r --ligand ${s} --center_x $cx --center_y $cy --center_z $cz --size_x 20 --size_y 20 --size_z 20 --num_modes 1 --scoring vinardo --score_only --out res${s2}   1>/dev/null
+			echo -n  res${s2} "">> rescoring.txt
+			grep  minimizedAffinity res${s2}|sed -n '1p'|awk '{print $3}'>>rescoring.txt
 
-echo -n  res${s2} "">> rescoring.txt
-grep  minimizedAffinity res${s2}|sed -n '1p'|awk '{print $3}'>>rescoring.txt
-
-done
-done
+		done
+	done
 
 fi
 
 #----------------------------------------------------------------
 
-#4)view the best 3 results with Pymol
-
-echo "4)view the best 3 results with Pymol"
-
+#4)視覺化檢視3個最佳結果
+echo "4)視覺化檢視3個最佳結果："
 rm -f sortRescore.txt
 sort -o sortRescore.txt -gk2 rescoring.txt
-
 restop=$(cat sortRescore.txt|tail -n3|awk '{print $1}')
-
 rm -f viewResult.pml
-
-cp ../tf*pdb .
-for r in 1 2 3
-do
-echo "load tf$r.pdb">>viewResult.pml
+#cp ../protein*pdb .
+for r in {1..3};do
+	echo "load protein$r.pdbqt">>viewResult.pml
 done
-
-for s in $restop
-do
-sr=$(ls $s|cut -c 4-6)
-save=$(echo ${s%\.*})
-
-/mgltools_x86_64Linux2_1.5.6/bin/pythonsh /mgltools_x86_64Linux2_1.5.6/MGLToolsPckgs/AutoDockTools/Utilities24/pdbqt_to_pdb.py -f $s  -o $save.pdb
-
-echo "load $save.pdb ">>viewResult.pml
+for s in $restop;do
+	echo "load $s" >>viewResult.pml
 done
 
 #label some residues 
 echo "label resi 290 and chain A and name CA,\"(%s, %s, %s)\" % (resn, resi, chain)">>viewResult.pml
 echo "label resi 80 and chain B and name CA,\"(%s, %s, %s)\" % (resn, resi, chain)">>viewResult.pml
 echo "label resi 63 and chain B and name CA,\"(%s, %s, %s)\" % (resn, resi, chain)">>viewResult.pml
-gnome-terminal -e "bash -c \"pymol viewResult.pml; exec bash\" "
+gnome-terminal -- bash -c "pymol viewResult.pml; exec bash" 
 
 
 exit 0
