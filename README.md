@@ -1,4 +1,4 @@
-# screenDrugToSpecificProteinWithSmina-description and usage:
+# 針對特定蛋白尋找可能的治療藥物-:
 This script is a demo to screening possible drug as the inhibitor to the specific protein with the software, Smina.
 
         $sh ./docking.sh
