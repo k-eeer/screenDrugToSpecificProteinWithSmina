@@ -15,12 +15,14 @@ echo $'0\n0\n'|gmx cluster -f correctNma.pdb  -s frame1.pdb  -method gromos -cl 
 	#split PDBs to single PDB.
 	csplit clNma.pdb /TITLE/ -n1 {*} -f clNmas -b %1d.pdb
 	rm -r clNmas0.pdb
-	#superposition.;file:forAlignPml.sh;tool:Pymol
-	#bash forAlignPml.sh
-	#pymol -c segmentAlign.pml 1>/dev/null
-	#cluster之後
-	#cluster後chainID遺失，目前
-	#先用完整分子以chimera:match maker對齊clNmas*.pdb後寫成protein*.pdb
+	rm corClus*pdb
+	for i in {1..3};do
+		cut frame1.pdb -c 1-31>clHead.tmp
+		cut clNmas$i.pdb -c 32-79>clTail.tmp
+		paste -d "" clHead.tmp clTail.tmp >corClus$i.pdb
+		rm clHead.tmp clTail.tmp
+	done
+	bash forAlignPml.sh
 	
 	for i in {1..3};do
 		#mv cluster$i.pdb protein$i.pdb
